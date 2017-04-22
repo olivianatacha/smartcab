@@ -118,11 +118,17 @@ class LearningAgent(Agent):
                 action = key
                 
         if self.learning == False :
-            action = random.choice(self.valid_actions[1:])
-        #if self.learning == True :
-            #action = self.get_maxQ(state)
-            #if random.random() < self.epsilon:
-            #    action = random.choice(self.valid_actions[1:])
+            action = random.choice(self.valid_actions)
+        if self.learning == True :
+            maxQ = self.get_maxQ(state)
+            list_actions_maxQ = list()
+            for stat in self.Q.keys():
+                for act in self.Q[stat].keys():
+                    if self.Q[stat][act] == maxQ:
+                        list_actions_maxQ.append( act )
+            
+            action = random.choice(list_actions_maxQ)
+            #print list_actions
         return action
 
 
@@ -136,10 +142,10 @@ class LearningAgent(Agent):
         ###########
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
-        
+        #print state, action
         if self.learning == True:
-            #self.Q[state][action] = (1 - self.alpha) * self.Q[state][action] + (self.alpha * reward)
-            self.Q[state][action] = reward + self.alpha * self.get_maxQ(state)
+            self.Q[state][action] = (1 - self.alpha) * self.Q[state][action] + (self.alpha * reward)
+            #self.Q[state][action] = reward + self.alpha * self.get_maxQ(state)
         
         return
 
@@ -191,7 +197,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env,update_delay=0.01,display=False, log_metrics=True,optimized=True)
+    sim = Simulator(env,update_delay=0.01,display=False, log_metrics=False,optimized=True)
     
     ##############
     # Run the simulator
